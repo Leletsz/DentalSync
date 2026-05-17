@@ -1,5 +1,15 @@
 import { ReactNode } from "react";
+import SidebarDashboard from "./components/sidebar";
+import Link from "next/link";
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <SidebarDashboard>{children}</SidebarDashboard>
+    </>
+  );
 }
