@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -37,9 +36,10 @@ export function Header() {
       {session ? (
         <Link
           href={"/dashboard"}
-          className="flex items-center justify-center gap-2"
+          className="flex items-center justify-center gap-2 bg-zinc-900 text-white py-1 rounded-md px-4"
         >
-          Acessar clinica
+          <LogIn />
+          Portal da Clínica
         </Link>
       ) : (
         <Button>
@@ -69,10 +69,7 @@ export function Header() {
               <Menu className="w-6 h-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent
-            side="right"
-            className="w-[240px] sm:w-[300px] z-9999 px-8"
-          >
+          <SheetContent side="right" className="w-240px sm:w-300px z-9999 px-8">
             <SheetHeader></SheetHeader>
             <SheetTitle className="font-bold text-xl ">Menu</SheetTitle>
             <SheetDescription>Veja nossos links</SheetDescription>
