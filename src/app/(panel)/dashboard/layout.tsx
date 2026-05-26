@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import SidebarDashboard from "./components/sidebar";
+import SidebarDashboard from "./_components/sidebar";
 import Link from "next/link";
 
 export default function DashboardLayout({
