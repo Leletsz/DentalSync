@@ -1,11 +1,21 @@
 import getSession from "@/lib/getSession";
+
 import { redirect } from "next/navigation";
-import React from "react";
+import { getUserData } from "./_data-access/get-info-user";
+import { ProfileContent } from "./_components/profile";
 
 export default async function Profile() {
   const session = await getSession();
+
   if (!session) {
     redirect("/");
   }
-  return <div>Profile</div>;
+
+  const user = await getUserData({ userId: session.user?.id });
+
+  if (!user) {
+    redirect("/");
+  }
+
+  return <ProfileContent />;
 }

@@ -14,7 +14,7 @@ interface User {
   image?: string;
   stripe_customer_id?: string;
   times: string[];
-  adress?: string;
+  address?: string;
   phone?: string;
   status: boolean;
   createdAt: string;
