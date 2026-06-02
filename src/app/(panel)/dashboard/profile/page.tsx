@@ -17,5 +17,5 @@ export default async function Profile() {
     redirect("/");
   }
 
-  return <ProfileContent />;
+  return <ProfileContent user={user} />;
 }

@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useProfileForm } from "./profile-form";
+import { ProfileFormData, useProfileForm } from "./profile-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import imgProfile from "../../../../../../public/foto1.png";
@@ -38,10 +38,30 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export function ProfileContent() {
-  const [selectedHours, setSelectedHours] = useState<string[]>([]);
+import type { Prisma } from "@/generated/prisma/client";
 
-  const form = useProfileForm();
+type UserWithSubscription = Prisma.UserGetPayload<{
+  include: {
+    subscription: true;
+  };
+}>;
+
+interface ProfileContentProps {
+  user: UserWithSubscription | null;
+}
+export function ProfileContent({ user }: ProfileContentProps) {
+  const [selectedHours, setSelectedHours] = useState<string[]>(
+    user?.times ?? [],
+  );
+  const [dialogIsOpen, setDialogIsOpen] = useState(false);
+
+  const form = useProfileForm({
+    name: user?.name,
+    address: user?.address,
+    phone: user?.phone,
+    status: user?.status,
+    timeZone: user?.timeZone,
+  });
 
   function generateTimeSlots(): string[] {
     const hours: string[] = [];
@@ -64,6 +84,26 @@ export function ProfileContent() {
     );
   }
 
+  const timeZones = Intl.supportedValuesOf("timeZone").filter(
+    (zone) =>
+      zone.startsWith("America/Sao_Paulo") ||
+      zone.startsWith("America/Fortaleza") ||
+      zone.startsWith("America/Recife") ||
+      zone.startsWith("America/Bahia") ||
+      zone.startsWith("America/Belem") ||
+      zone.startsWith("America/Manaus") ||
+      zone.startsWith("America/Cuiaba") ||
+      zone.startsWith("America/Boa_Vista"),
+  );
+
+  async function onSubmit(values: ProfileFormData) {
+    const profile = {
+      ...values,
+      times: selectedHours,
+    };
+    console.log(profile);
+  }
+
   return (
     <div className="mx-auto">
       <Card>
@@ -76,7 +116,7 @@ export function ProfileContent() {
               <Image src={imgProfile} alt="" className="object-cover" />
             </div>
           </div>
-          <form>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup className="space-y-3">
               <Controller
                 control={form.control}
@@ -118,7 +158,7 @@ export function ProfileContent() {
               <Controller
                 control={form.control}
                 name="status"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <Field>
                     <FieldLabel>Status da clínica</FieldLabel>
 
@@ -144,54 +184,97 @@ export function ProfileContent() {
                   </Field>
                 )}
               />
+              <Controller
+                control={form.control}
+                name="timeZone"
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel>Selecione fuso horário</FieldLabel>
+
+                    <FieldContent>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione o seu fuso horário" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {timeZones.map((zone) => (
+                            <SelectItem key={zone} value={zone}>
+                              {zone}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
+
+              <Field>
+                <FieldLabel>Configurar horários da clínica</FieldLabel>
+                <FieldContent>
+                  <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className="w-full justify-between"
+                      >
+                        Clique aqui para selecionar horários{" "}
+                        <ArrowRight className="w-5 h-5" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader className="text-center">
+                        <DialogTitle>Horários da Clínica</DialogTitle>
+                        <DialogDescription>
+                          Selecione abaixo os horários de funcionamento
+                        </DialogDescription>
+                      </DialogHeader>
+                      <section className="py-4">
+                        <p className="text-sm text-muted-foreground">
+                          Clique nos horários abaixo para marcar ou desmarcar
+                        </p>
+                        <div className="grid grid-cols-5 gap-2">
+                          {hours.map((hour) => (
+                            <Button
+                              key={hour}
+                              variant={"outline"}
+                              className={cn(
+                                "h-10 border-3",
+                                selectedHours.includes(hour) &&
+                                  "border-cyan-500",
+                              )}
+                              onClick={() => toggleHour(hour)}
+                            >
+                              {hour}
+                            </Button>
+                          ))}
+                        </div>
+                      </section>
+                      <Button
+                        className="w-full bg-cyan-500"
+                        onClick={() => setDialogIsOpen(false)}
+                      >
+                        Salvar horários
+                      </Button>
+                    </DialogContent>
+                  </Dialog>
+                </FieldContent>
+              </Field>
+              <Button
+                className="w-full bg-cyan-500 cursor-pointer"
+                type="submit"
+              >
+                Salvar alterações
+              </Button>
             </FieldGroup>
           </form>
-          <FieldGroup>
-            <Field>
-              <FieldLabel>Configurar horários da clínica</FieldLabel>
-              <FieldContent>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className="w-full justify-between"
-                    >
-                      Clique aqui para selecionar horários{" "}
-                      <ArrowRight className="w-5 h-5" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader className="text-center">
-                      <DialogTitle>Horários da Clínica</DialogTitle>
-                      <DialogDescription>
-                        Selecione abaixo os horários de funcionamento
-                      </DialogDescription>
-                    </DialogHeader>
-                    <section className="py-4">
-                      <p className="text-sm text-muted-foreground">
-                        Clique nos horários abaixo para marcar ou desmarcar
-                      </p>
-                      <div className="grid grid-cols-5 gap-2">
-                        {hours.map((hour) => (
-                          <Button
-                            key={hour}
-                            variant={"outline"}
-                            className={cn(
-                              "h-10 border-3",
-                              selectedHours.includes(hour) && "border-cyan-500",
-                            )}
-                            onClick={() => toggleHour(hour)}
-                          >
-                            {hour}
-                          </Button>
-                        ))}
-                      </div>
-                    </section>
-                  </DialogContent>
-                </Dialog>
-              </FieldContent>
-            </Field>
-          </FieldGroup>
         </CardContent>
       </Card>
     </div>
