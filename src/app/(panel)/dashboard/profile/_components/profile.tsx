@@ -39,6 +39,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 import type { Prisma } from "@/generated/prisma/client";
+import { updateProfile } from "../_actions/update-profile";
 
 type UserWithSubscription = Prisma.UserGetPayload<{
   include: {
@@ -97,11 +98,14 @@ export function ProfileContent({ user }: ProfileContentProps) {
   );
 
   async function onSubmit(values: ProfileFormData) {
-    const profile = {
-      ...values,
-      times: selectedHours,
-    };
-    console.log(profile);
+    const response = await updateProfile({
+      name: values.name,
+      address: values.address,
+      phone: values.phone,
+      status: values.status === "active" ? true : false,
+      timeZone: values.timeZone,
+      times: selectedHours || [],
+    });
   }
 
   return (
@@ -113,7 +117,13 @@ export function ProfileContent({ user }: ProfileContentProps) {
         <CardContent className="space-y-6">
           <div className="flex justify-center">
             <div className="relative h-40 w-40 rounded-full overflow-hidden">
-              <Image src={imgProfile} alt="" className="object-cover" />
+              <Image
+                src={user?.image ? user.image : imgProfile}
+                alt=""
+                width={160}
+                height={160}
+                className="object-cover"
+              />
             </div>
           </div>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -146,6 +156,24 @@ export function ProfileContent({ user }: ProfileContentProps) {
                       <Input
                         {...field}
                         placeholder="Digite o endereço da clinica"
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
+              <Controller
+                control={form.control}
+                name="phone"
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel>Telefone:</FieldLabel>
+                    <FieldContent>
+                      <Input
+                        {...field}
+                        placeholder="Digite o numero de telefone"
                       />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
