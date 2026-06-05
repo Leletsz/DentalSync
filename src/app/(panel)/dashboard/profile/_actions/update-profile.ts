@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { error } from "console";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -46,6 +46,8 @@ export async function updateProfile(data: FormSchema) {
         times: data.times || [],
       },
     });
+
+    revalidatePath("/dashboard/profile");
 
     return {
       data: "Clinica atualizada com sucesso",

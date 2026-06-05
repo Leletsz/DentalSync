@@ -1,5 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+
 import {
   Dialog,
   DialogContent,
@@ -34,12 +36,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import imgProfile from "../../../../../../public/foto1.png";
 import { Controller } from "react-hook-form";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Edit, Edit2 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 import type { Prisma } from "@/generated/prisma/client";
 import { updateProfile } from "../_actions/update-profile";
+import { extractPhoneNumber, formatPhone } from "@/utils/formatPhone";
 
 type UserWithSubscription = Prisma.UserGetPayload<{
   include: {
@@ -55,6 +58,11 @@ export function ProfileContent({ user }: ProfileContentProps) {
     user?.times ?? [],
   );
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
+  const [editProfile, setEditProfile] = useState(true);
+
+  function handleEdit() {
+    setEditProfile(false);
+  }
 
   const form = useProfileForm({
     name: user?.name,
@@ -106,13 +114,22 @@ export function ProfileContent({ user }: ProfileContentProps) {
       timeZone: values.timeZone,
       times: selectedHours || [],
     });
+    if (response.error) {
+      toast(response.error, { closeButton: true });
+      return;
+    }
+    toast(response.data);
+    setEditProfile(true);
   }
 
   return (
     <div className="mx-auto">
       <Card>
-        <CardHeader>
+        <CardHeader className="flex justify-between items-center">
           <CardTitle>Meu perfil</CardTitle>
+          <Button className="cursor-pointer" type="button" onClick={handleEdit}>
+            <Edit />
+          </Button>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex justify-center">
@@ -137,6 +154,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
                     <FieldContent>
                       <Input
                         {...field}
+                        disabled={editProfile}
                         placeholder="Digite o nome da clinica"
                       />
                       {fieldState.invalid && (
@@ -155,6 +173,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
                     <FieldContent>
                       <Input
                         {...field}
+                        disabled={editProfile}
                         placeholder="Digite o endereço da clinica"
                       />
                       {fieldState.invalid && (
@@ -173,7 +192,12 @@ export function ProfileContent({ user }: ProfileContentProps) {
                     <FieldContent>
                       <Input
                         {...field}
-                        placeholder="Digite o numero de telefone"
+                        disabled={editProfile}
+                        placeholder="(68) 99923-4312"
+                        onChange={(e) => {
+                          const formattedValue = formatPhone(e.target.value);
+                          field.onChange(formattedValue);
+                        }}
                       />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
@@ -192,8 +216,9 @@ export function ProfileContent({ user }: ProfileContentProps) {
 
                     <FieldContent>
                       <Select
+                        disabled={editProfile}
                         onValueChange={field.onChange}
-                        defaultValue={field.value ? "active" : "inactive"}
+                        defaultValue={field.value}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o status" />
@@ -221,6 +246,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
 
                     <FieldContent>
                       <Select
+                        disabled={editProfile}
                         value={field.value}
                         onValueChange={field.onChange}
                       >
@@ -250,6 +276,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
                   <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
                     <DialogTrigger asChild>
                       <Button
+                        disabled={editProfile}
                         variant={"outline"}
                         className="w-full justify-between"
                       >
@@ -296,6 +323,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
                 </FieldContent>
               </Field>
               <Button
+                disabled={editProfile}
                 className="w-full bg-cyan-500 cursor-pointer"
                 type="submit"
               >
