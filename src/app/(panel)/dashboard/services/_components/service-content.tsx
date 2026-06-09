@@ -1,6 +1,10 @@
+import { getAllServices } from "../_data-access/get-all-services";
+import ServicesList from "./services-list";
+
 interface ServicesContentProps {
   userId: string;
 }
 export async function ServicesContent({ userId }: ServicesContentProps) {
-  return <div>Meus Serviços</div>;
+  const services = await getAllServices({ userId: userId });
+  return <ServicesList />;
 }
