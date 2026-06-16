@@ -24,6 +24,8 @@ import { Pencil, Plus, X } from "lucide-react";
 import DialogService from "./dialog-services";
 import { Service } from "@/generated/prisma/client";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { deleteService } from "../_actions/delete-service";
+import { toast } from "sonner";
 
 interface ServicesListProps {
   services: Service[];
@@ -31,6 +33,16 @@ interface ServicesListProps {
 
 export default function ServicesList({ services }: ServicesListProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  async function handleDeleteService(serviceId: string) {
+    const response = await deleteService({ serviceId: serviceId });
+    if (response?.error) {
+      toast(response.error);
+      return;
+    }
+    toast.success("Serviço deletado com sucesso");
+  }
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <section className="mx-auto">
@@ -73,7 +85,11 @@ export default function ServicesList({ services }: ServicesListProps) {
                       "
                       />
                     </Button>
-                    <Button variant={"ghost"} size={"icon"} onClick={() => {}}>
+                    <Button
+                      variant={"ghost"}
+                      size={"icon"}
+                      onClick={() => handleDeleteService(service.id)}
+                    >
                       <X
                         className="w-4 h-4
                       "

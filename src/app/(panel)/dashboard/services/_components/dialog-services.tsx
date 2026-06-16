@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { convertRealToCentes } from "@/utils/convertCurrency";
 import { createNewService } from "../_actions/create-service";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface DialogServiceModal {
   closeModal: () => void;
@@ -35,6 +36,7 @@ interface DialogServiceModal {
 export default function DialogService({ closeModal }: DialogServiceModal) {
   const form = UseDialogServiceForm();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function onSubmit(values: DialogServiceFormData) {
     setLoading(true);
@@ -54,8 +56,10 @@ export default function DialogService({ closeModal }: DialogServiceModal) {
       toast.error(response.error);
       return;
     }
+
     toast.success("Serviço cadastrado com sucesso");
     handleCloseModal();
+    router.refresh();
   }
   function handleCloseModal() {
     form.reset();
@@ -91,6 +95,9 @@ export default function DialogService({ closeModal }: DialogServiceModal) {
                   <FieldLabel>Nome do serviço: </FieldLabel>
                   <FieldContent>
                     <Input {...field} placeholder="Digite o nome do serviço" />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
                   </FieldContent>
                 </Field>
               )}
