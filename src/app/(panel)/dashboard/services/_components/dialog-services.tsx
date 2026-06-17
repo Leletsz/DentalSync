@@ -16,7 +16,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   DialogServiceFormData,
   UseDialogServiceForm,
@@ -31,10 +31,21 @@ import { useRouter } from "next/navigation";
 
 interface DialogServiceModal {
   closeModal: () => void;
+  serviceId?: string;
+  initialValues?: {
+    name: string;
+    price: string;
+    hours: string;
+    minutes: string;
+  } | null;
 }
 
-export default function DialogService({ closeModal }: DialogServiceModal) {
-  const form = UseDialogServiceForm();
+export default function DialogService({
+  closeModal,
+  initialValues,
+  serviceId,
+}: DialogServiceModal) {
+  const form = UseDialogServiceForm({ initialValues: initialValues });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -170,7 +181,9 @@ export default function DialogService({ closeModal }: DialogServiceModal) {
             className="w-full font-semibold text-white"
             disabled={loading}
           >
-            Adicionar Serviço
+            {loading
+              ? "Carregando..."
+              : `${serviceId ? "Atualizar serviço" : "Cadastrar Serviço"}`}
           </Button>
         </form>
       </div>
