@@ -71,7 +71,8 @@ export default function ServicesList({ services }: ServicesListProps) {
                 setIsDialogOpen(false);
                 setEditingService(null);
               }}
-              onClick={() => {
+              onCloseAutoFocus={(e) => {
+                e.preventDefault();
                 setIsDialogOpen(false);
                 setEditingService(null);
               }}
@@ -80,6 +81,7 @@ export default function ServicesList({ services }: ServicesListProps) {
                 closeModal={() => {
                   setIsDialogOpen(false);
                   setEditingService(null);
+                  console.log("teste");
                 }}
                 serviceId={editingService ? editingService.id : undefined}
                 initialValues={

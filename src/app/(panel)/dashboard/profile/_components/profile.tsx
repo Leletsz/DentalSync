@@ -42,7 +42,9 @@ import { cn } from "@/lib/utils";
 
 import type { Prisma } from "@/generated/prisma/client";
 import { updateProfile } from "../_actions/update-profile";
-import { extractPhoneNumber, formatPhone } from "@/utils/formatPhone";
+import { formatPhone } from "@/utils/formatPhone";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type UserWithSubscription = Prisma.UserGetPayload<{
   include: {
@@ -54,14 +56,20 @@ interface ProfileContentProps {
   user: UserWithSubscription | null;
 }
 export function ProfileContent({ user }: ProfileContentProps) {
+  const router = useRouter();
   const [selectedHours, setSelectedHours] = useState<string[]>(
     user?.times ?? [],
   );
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
   const [editProfile, setEditProfile] = useState(true);
+  const { update } = useSession();
 
   function handleEdit() {
-    setEditProfile(false);
+    if (editProfile) {
+      setEditProfile(false);
+      return;
+    }
+    setEditProfile(true);
   }
 
   const form = useProfileForm({
@@ -83,6 +91,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
     }
     return hours;
   }
+
   const hours = generateTimeSlots();
 
   function toggleHour(hour: string) {
@@ -120,6 +129,11 @@ export function ProfileContent({ user }: ProfileContentProps) {
     }
     toast(response.data);
     setEditProfile(true);
+  }
+  async function handleLogout() {
+    await signOut();
+    await update();
+    router.replace("/");
   }
 
   return (
@@ -333,6 +347,15 @@ export function ProfileContent({ user }: ProfileContentProps) {
           </form>
         </CardContent>
       </Card>
+      <section className="mt-4 ">
+        <Button
+          variant={"destructive"}
+          onClick={handleLogout}
+          className="cursor-pointer"
+        >
+          Sair da conta
+        </Button>
+      </section>
     </div>
   );
 }
