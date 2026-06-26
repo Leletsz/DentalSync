@@ -4,7 +4,7 @@ import Image from "next/image";
 import imgTest from "../../../../../../public/foto1.png";
 import { MapPin } from "lucide-react";
 import { Prisma } from "@/generated/prisma/client";
-import { useAppointmentForm } from "./schedule-form";
+import { AppointmentFormData, useAppointmentForm } from "./schedule-form";
 
 import { Controller } from "react-hook-form";
 
@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 type UserWithServiceAndSubscription = Prisma.UserGetPayload<{
   include: {
@@ -39,6 +40,10 @@ interface ScheduleContentProps {
 
 export default function ScheduleContent({ clinic }: ScheduleContentProps) {
   const form = useAppointmentForm();
+  const { watch } = form;
+  async function handleRegisterAppointment(formData: AppointmentFormData) {
+    console.log(formData);
+  }
   return (
     <div className="min-h-screen flex flex-col">
       <div className="h-32 bg-cyan-500" />
@@ -69,13 +74,16 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
 
       <section className="max-w-2xl mx-auto w-full mt-6">
         {/* Formulário de agendamento */}
-        <FieldGroup {...form}>
-          <form className="mx-2 space-y-6 bg-white p-6 border rounded-md shadow-sm">
+        <form
+          onSubmit={form.handleSubmit(handleRegisterAppointment)}
+          className="mx-2 space-y-4 bg-white p-6 border rounded-md shadow-sm"
+        >
+          <FieldGroup>
             <Controller
               control={form.control}
               name="name"
               render={({ field, fieldState }) => (
-                <Field className="my-2">
+                <Field>
                   <FieldLabel className="font-semibold">
                     Nome Completo:{" "}
                   </FieldLabel>
@@ -96,7 +104,7 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
               control={form.control}
               name="email"
               render={({ field, fieldState }) => (
-                <Field className="my-2">
+                <Field>
                   <FieldLabel className="font-semibold">Email: </FieldLabel>
                   <FieldContent>
                     <Input
@@ -115,7 +123,7 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
               control={form.control}
               name="phone"
               render={({ field, fieldState }) => (
-                <Field className="my-2">
+                <Field>
                   <FieldLabel className="font-semibold">Telefone: </FieldLabel>
                   <FieldContent>
                     <Input
@@ -139,13 +147,13 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
               control={form.control}
               name="date"
               render={({ field, fieldState }) => (
-                <Field className="w-full flex">
-                  <FieldLabel className=" font-semibold">
-                    Data do agendamento:
-                  </FieldLabel>
-                  <FieldContent>
+                <Field className="flex flex-row justify-start">
+                  <FieldContent className="flex flex-row gap-3">
+                    <FieldLabel className="font-semibold">
+                      Data do agendamento:
+                    </FieldLabel>
                     <DateTimePicker
-                      className="rounded border p-2"
+                      className="rounded border p-2 w-25"
                       initialDate={new Date()}
                       onChange={(date) => {
                         if (date) {
@@ -190,8 +198,21 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
                 </Field>
               )}
             />
-          </form>
-        </FieldGroup>
+            {clinic.status ? (
+              <Button
+                className="w-full bg-cyan-500 hover:bg-cyan-400"
+                type="submit"
+                disabled={!form.formState.isValid}
+              >
+                Realizar agendamento
+              </Button>
+            ) : (
+              <p className="bg-red-500 text-white text-center px-4 py-2 rounded">
+                A clinica está fechada nesse momento
+              </p>
+            )}
+          </FieldGroup>
+        </form>
       </section>
     </div>
   );
