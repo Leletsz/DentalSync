@@ -19,6 +19,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { formatPhone } from "@/utils/formatPhone";
 import { DateTimePicker } from "./date-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type UserWithServiceAndSubscription = Prisma.UserGetPayload<{
   include: {
@@ -60,10 +67,10 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
         </div>
       </section>
 
-      <section className="max-w-2xl mx-auto w-full mt-5">
+      <section className="max-w-2xl mx-auto w-full mt-6">
         {/* Formulário de agendamento */}
-        <form className="mx-2 space-y-6 bg-white p-6 border rounded-md shadow-sm">
-          <FieldGroup>
+        <FieldGroup {...form}>
+          <form className="mx-2 space-y-6 bg-white p-6 border rounded-md shadow-sm">
             <Controller
               control={form.control}
               name="name"
@@ -127,17 +134,18 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
                 </Field>
               )}
             />
+
             <Controller
               control={form.control}
               name="date"
               render={({ field, fieldState }) => (
-                <Field className="flex items-center gap-2 space-y-1">
-                  <FieldLabel className="font-semibold">
-                    Data do agendamento:{" "}
+                <Field className="w-full flex">
+                  <FieldLabel className=" font-semibold">
+                    Data do agendamento:
                   </FieldLabel>
                   <FieldContent>
                     <DateTimePicker
-                      className="w-full rounded border p-2"
+                      className="rounded border p-2"
                       initialDate={new Date()}
                       onChange={(date) => {
                         if (date) {
@@ -152,8 +160,38 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
                 </Field>
               )}
             />
-          </FieldGroup>
-        </form>
+
+            <Controller
+              control={form.control}
+              name="serviceId"
+              render={({ field, fieldState }) => (
+                <Field className="">
+                  <FieldLabel className="font-semibold">
+                    Selecione o serviço:{" "}
+                  </FieldLabel>
+                  <FieldContent>
+                    <Select onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecione um serviço" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clinic.services.map((service) => (
+                          <SelectItem key={service.id} value={service.id}>
+                            {service.name} ({Math.floor(service.duration / 60)}h{" "}
+                            {service.duration % 60}min)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </FieldContent>
+                </Field>
+              )}
+            />
+          </form>
+        </FieldGroup>
       </section>
     </div>
   );
