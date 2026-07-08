@@ -28,8 +28,11 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
-import { watch } from "fs";
 import { Label } from "@/components/ui/label";
+import { ScheduleTimeList } from "./schedule-time-list";
+import { createNewAppointment } from "../_actions/create-appointment";
+import { toast } from "sonner";
+import { useWatch } from "react-hook-form";
 
 type UserWithServiceAndSubscription = Prisma.UserGetPayload<{
   include: {
@@ -41,7 +44,7 @@ interface ScheduleContentProps {
   clinic: UserWithServiceAndSubscription;
 }
 
-interface TimeSlot {
+export interface TimeSlot {
   time: string;
   available: boolean;
 }
@@ -49,20 +52,27 @@ interface TimeSlot {
 export default function ScheduleContent({ clinic }: ScheduleContentProps) {
   const form = useAppointmentForm();
   const { watch } = form;
-  const name = form.watch("name");
-  const email = form.watch("email");
-  const phone = form.watch("phone");
-  const date = form.watch("date");
 
-  const selectedDate = watch("date");
+  const [selectedServiceId, setSelectedServiceId] = useState(false);
 
-  const selectedService = watch("serviceId");
+  const selectedService = useWatch({
+    control: form.control,
+    name: "serviceId",
+  });
+
+  const selectedDate = useWatch({
+    control: form.control,
+    name: "date",
+  });
 
   const [selectedTime, setSelectedTime] = useState("");
   const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
   const [blockedTimes, setBlockedTimes] = useState<string[]>([]);
+  useEffect(() => {
+    console.table(availableTimeSlots);
+  }, [availableTimeSlots]);
 
   const fetchBlockedTimes = useCallback(
     async (date: Date): Promise<string[]> => {
@@ -73,7 +83,9 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_URL}/api/schedule/get-appointments?userId=${clinic.id}&date=${dateString}`,
         );
-
+        console.log("selectedDate:", selectedDate);
+        console.log("toISOString:", selectedDate.toISOString());
+        console.log("dateString:", dateString);
         const json = await response.json();
         setLoadingSlots(false);
         return json; //Retorna o array com os horarios que ja tem bloqueado desse Dia e dessa clinica
@@ -97,13 +109,37 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
           time: time,
           available: !blocked.includes(time),
         }));
-        setAvailableTimeSlots(finalSlots);
+
+        const stillAvailable = finalSlots.find(
+          (slot) => slot.time === selectedTime && slot.available,
+        );
+        if (!stillAvailable) setAvailableTimeSlots(finalSlots);
       });
     }
   }, [selectedDate, clinic.times, fetchBlockedTimes, selectedTime]);
 
   async function handleRegisterAppointment(formData: AppointmentFormData) {
-    console.log(formData);
+    if (!selectedTime) {
+      return;
+    }
+
+    const response = await createNewAppointment({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      time: selectedTime,
+      date: formData.date,
+      serviceId: formData.serviceId,
+      clinicId: clinic.id,
+    });
+    if (response.error) {
+      toast.error(response.error);
+      return;
+    }
+    toast.success("Consulta agendada com sucesso!");
+    form.reset();
+    setSelectedTime("");
+    setSelectedServiceId(false);
   }
 
   return (
@@ -241,8 +277,11 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
                   </FieldLabel>
                   <FieldContent>
                     <Select
-                      onValueChange={field.onChange}
-                      disabled={!name?.trim()}
+                      value={field.value}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedServiceId(true);
+                      }}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecione um serviço" />
@@ -263,12 +302,40 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
                 </Field>
               )}
             />
-            {selectedService && (
+
+            {selectedServiceId && (
               <div>
                 <Label>Horários disponíveis:</Label>
-                <div className="bg-gray-50 p-4 rounded-lg"></div>
+                <div className="bg-gray-100 p-4 mt-2 rounded-lg">
+                  {loadingSlots ? (
+                    <p>Carregando horários...</p>
+                  ) : availableTimeSlots.length === 0 ? (
+                    <p>Nenhum horario disponivel</p>
+                  ) : (
+                    <ScheduleTimeList
+                      clinicTimes={clinic.times}
+                      blockedTimes={blockedTimes}
+                      availableTimeSlots={availableTimeSlots}
+                      selectedDate={selectedDate}
+                      selectedTime={selectedTime}
+                      onSelectTime={(time) => setSelectedTime(time)}
+                      requiredSlots={
+                        clinic.services.find(
+                          (service) => service.id === selectedService,
+                        )
+                          ? Math.ceil(
+                              clinic.services.find(
+                                (service) => service.id === selectedService,
+                              )!.duration / 30,
+                            )
+                          : 1
+                      }
+                    />
+                  )}
+                </div>
               </div>
             )}
+
             {clinic.status ? (
               <Button
                 className="w-full bg-cyan-500 hover:bg-cyan-400"

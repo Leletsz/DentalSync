@@ -49,11 +49,18 @@ export async function GET(request: NextRequest) {
         service: true,
       },
     });
+    console.log(
+      appointments.map((a) => ({
+        time: a.time,
+        appointmentDate: a.appointmentDate,
+      })),
+    );
     const blockedSlots = new Set<string>();
 
     for (const apt of appointments) {
       const requiredSlots = Math.ceil(apt.service.duration / 30);
       const startIndex = user.times.indexOf(apt.time);
+
       if (startIndex !== -1) {
         for (let i = 0; i < requiredSlots; i++) {
           const blockedSlot = user.times[startIndex + i];
@@ -65,6 +72,11 @@ export async function GET(request: NextRequest) {
     }
 
     const blockedTimes = Array.from(blockedSlots);
+    console.log({
+      dateParam,
+      startDate,
+      endDate,
+    });
     return NextResponse.json(blockedTimes);
   } catch (err) {
     return NextResponse.json(

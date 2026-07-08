@@ -1,7 +1,6 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { tr } from "zod/v4/locales";
 
 export async function getInfoSchedule({ userId }: { userId: string }) {
   try {
