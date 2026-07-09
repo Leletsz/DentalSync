@@ -83,9 +83,7 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_URL}/api/schedule/get-appointments?userId=${clinic.id}&date=${dateString}`,
         );
-        console.log("selectedDate:", selectedDate);
-        console.log("toISOString:", selectedDate.toISOString());
-        console.log("dateString:", dateString);
+
         const json = await response.json();
         setLoadingSlots(false);
         return json; //Retorna o array com os horarios que ja tem bloqueado desse Dia e dessa clinica
@@ -256,6 +254,7 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
                       onChange={(date) => {
                         if (date) {
                           field.onChange(date);
+                          setSelectedTime("");
                         }
                       }}
                     />
@@ -280,6 +279,7 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
                       value={field.value}
                       onValueChange={(value) => {
                         field.onChange(value);
+                        setSelectedTime("");
                         setSelectedServiceId(true);
                       }}
                     >

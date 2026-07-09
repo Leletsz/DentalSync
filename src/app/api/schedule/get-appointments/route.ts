@@ -49,12 +49,7 @@ export async function GET(request: NextRequest) {
         service: true,
       },
     });
-    console.log(
-      appointments.map((a) => ({
-        time: a.time,
-        appointmentDate: a.appointmentDate,
-      })),
-    );
+
     const blockedSlots = new Set<string>();
 
     for (const apt of appointments) {
@@ -72,11 +67,7 @@ export async function GET(request: NextRequest) {
     }
 
     const blockedTimes = Array.from(blockedSlots);
-    console.log({
-      dateParam,
-      startDate,
-      endDate,
-    });
+
     return NextResponse.json(blockedTimes);
   } catch (err) {
     return NextResponse.json(
