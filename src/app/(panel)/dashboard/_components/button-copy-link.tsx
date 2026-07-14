@@ -12,7 +12,7 @@ export function ButtonCopyLink({ userId }: { userId: string }) {
     toast("Link de agendamento copiado com sucesso!");
   }
   return (
-    <Button onClick={handleCopyLink}>
+    <Button onClick={handleCopyLink} className="cursor-pointer">
       <LinkIcon className="w-5 h-5" />
     </Button>
   );

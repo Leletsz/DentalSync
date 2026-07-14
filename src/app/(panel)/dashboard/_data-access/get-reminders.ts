@@ -13,6 +13,7 @@ export async function getReminders({ userId }: { userId: string }) {
         userId: userId,
       },
     });
+    return reminders;
   } catch (err) {
     console.log(err);
     return [];
