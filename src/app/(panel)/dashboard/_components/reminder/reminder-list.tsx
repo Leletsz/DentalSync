@@ -8,6 +8,16 @@ import { Plus, Trash } from "lucide-react";
 import { deleteReminder } from "../../_actions/delete-reminder";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { ReminderContent } from "./reminder-content";
+import { useState } from "react";
 
 interface ReminderListProps {
   reminder?: Reminder[];
@@ -15,6 +25,7 @@ interface ReminderListProps {
 
 export default function ReminderList({ reminder }: ReminderListProps) {
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   async function handleDeleteReminder(id: string) {
     const response = await deleteReminder({ reminderId: id });
@@ -34,13 +45,30 @@ export default function ReminderList({ reminder }: ReminderListProps) {
           <CardTitle className="text-xl md:text-2xl font-bold">
             Lembretes
           </CardTitle>
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            className="w-9 p-0 cursor-pointer"
-          >
-            <Plus className="w-5 h-5" />
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant={"ghost"}
+                size={"sm"}
+                className="w-9 p-0 cursor-pointer"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm: max-w-106.5 text-center">
+              <DialogHeader>
+                <DialogTitle>Novo Lembrete</DialogTitle>
+                <DialogDescription>
+                  Criar novo lembre para sua lista.
+                </DialogDescription>
+              </DialogHeader>
+              <ReminderContent
+                closeDialog={() => {
+                  setIsDialogOpen(false);
+                }}
+              />
+            </DialogContent>
+          </Dialog>
         </CardHeader>
         <CardContent>
           {reminder?.length === 0 && (
