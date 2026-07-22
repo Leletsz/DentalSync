@@ -1,25 +1,62 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Prisma } from "@/generated/prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { useSearchParams } from "next/navigation";
 
 interface AppointmentsListProps {
   times: string[];
 }
+
+type AppointmentWithService = Prisma.AppointmentGetPayload<{
+  include: {
+    service: true;
+  };
+}>;
 export function AppointmentsList({ times }: AppointmentsListProps) {
   const searchParams = useSearchParams();
   const date = searchParams.get("date");
 
-  const {} = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["get-appointments", date],
     queryFn: async () => {
       let activeDate = date;
       if (!activeDate) {
-        const today = new Date();
+        const today = format(new Date(), "yyyy-MM-dd");
+        activeDate = today;
       }
+      const url = `${process.env.NEXT_PUBLIC_URL}/api/clinic/appointments?date=${activeDate}`;
+      const response = await fetch(url);
+      const json = (await response.json()) as AppointmentWithService[];
+
+      console.log(json);
+      if (!response.ok) {
+        return [];
+      }
+      return json;
     },
   });
+
+  // Se um Appointment começa no time (15:00) e tem requiredSlots 2
+  //ocuppantMap["15:00", appointment]
+  const ocuppantMap: Record<string, AppointmentWithService> = {};
+
+  if (data && data.length > 0) {
+    for (const appointment of data) {
+      //calcular qts slots são necessarios
+      const requiredSlots = Math.ceil(appointment.service.duration / 30);
+
+      const startIndex = times.indexOf(appointment.time);
+
+      if (startIndex !== -1) {
+        for (let i = 0; i < requiredSlots; i++) {
+          const slotIndex = startIndex + i;
+        }
+      }
+    }
+  }
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
