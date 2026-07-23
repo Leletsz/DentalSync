@@ -37,6 +37,8 @@ export function AppointmentsList({ times }: AppointmentsListProps) {
       }
       return json;
     },
+    staleTime: 20000,
+    refetchInterval: 40000,
   });
 
   // Se um Appointment começa no time (15:00) e tem requiredSlots 2
@@ -53,6 +55,9 @@ export function AppointmentsList({ times }: AppointmentsListProps) {
       if (startIndex !== -1) {
         for (let i = 0; i < requiredSlots; i++) {
           const slotIndex = startIndex + i;
+          if (slotIndex < times.length) {
+            ocuppantMap[times[slotIndex]] = appointment;
+          }
         }
       }
     }
@@ -67,17 +72,38 @@ export function AppointmentsList({ times }: AppointmentsListProps) {
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[calc(100vh-20rem)] lg:h-[calc(100vh-15rem)] pr-4">
-          {times.map((slot) => {
-            return (
-              <div
-                key={slot}
-                className="flex items-center py-2 border-t last:border-b"
-              >
-                <div className="w-16 text-sm font-semibold">{slot}</div>
-                <div className="flex-1 text-sm text-gray-500">Disponível</div>
-              </div>
-            );
-          })}
+          {isLoading ? (
+            <p>Carregando agenda...</p>
+          ) : (
+            times.map((slot) => {
+              const occupant = ocuppantMap[slot];
+              if (occupant) {
+                return (
+                  <div
+                    key={slot}
+                    className="flex items-center py-2 border-t last:border-b"
+                  >
+                    <div className="w-16 text-sm font-semibold">{slot}</div>
+                    <div className="flex-1 text-sm">
+                      <div className="font-semibold">{occupant.name}</div>
+                      <div className=" text-sm text-gray-500">
+                        {occupant.phone}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div
+                  key={slot}
+                  className="flex items-center py-2 border-t last:border-b"
+                >
+                  <div className="w-16 text-sm font-semibold">{slot}</div>
+                  <div className="flex-1 text-sm text-gray-500">Disponível</div>
+                </div>
+              );
+            })
+          )}
         </ScrollArea>
       </CardContent>
     </Card>
