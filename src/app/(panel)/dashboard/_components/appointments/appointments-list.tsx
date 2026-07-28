@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { DialogAppointment } from "./dialog-appointment";
+import { ButtonPickerAppointment } from "./button-date";
 
 interface AppointmentsListProps {
   times: string[];
@@ -43,7 +44,6 @@ export function AppointmentsList({ times }: AppointmentsListProps) {
       const response = await fetch(url);
       const json = (await response.json()) as AppointmentWithService[];
 
-      console.log(json);
       if (!response.ok) {
         return [];
       }
@@ -91,7 +91,7 @@ export function AppointmentsList({ times }: AppointmentsListProps) {
           <CardTitle className="text-xl md:text-2xl font-bold">
             Agendamentos
           </CardTitle>
-          <button>Selecionar data</button>
+          <ButtonPickerAppointment />
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-20rem)] lg:h-[calc(100vh-15rem)] pr-4">
