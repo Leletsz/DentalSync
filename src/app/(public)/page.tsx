@@ -4,6 +4,8 @@ import Hero from "./_components/hero";
 import Professionals from "./_components/professionals";
 import { getProfessionals } from "./_data-access/get-clinics";
 
+export const revalidate = 90;
+
 export default async function Home() {
   const professionals = await getProfessionals();
   return (
@@ -11,9 +13,7 @@ export default async function Home() {
       <Header />
       <div>
         <Hero />
-
         <Professionals professionals={professionals || []} />
-
         <Footer />
       </div>
     </div>
