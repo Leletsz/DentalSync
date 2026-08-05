@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Plan } from "@/generated/prisma/enums";
 import { createSubscription } from "../_actions/create-subscription";
+import { toast } from "sonner";
+import { getStripeJs } from "@/utils/stripe-js";
 
 interface SubscriptionButtonProps {
   type: Plan;
@@ -10,7 +12,19 @@ interface SubscriptionButtonProps {
 
 export function SubscriptionButton({ type }: SubscriptionButtonProps) {
   async function handleCreateBilling() {
-    const response = await createSubscription({ type: type });
+    const result = await createSubscription({ type: type });
+
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+
+    if (!result.url) {
+      toast.error("Não foi possível iniciar o checkout. Tente novamente.");
+      return;
+    }
+
+    window.location.href = result.url;
   }
   return (
     <Button
