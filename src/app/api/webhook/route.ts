@@ -1,3 +1,5 @@
+import { Plan } from "@/generated/prisma/enums";
+import { manageSubscription } from "@/utils/manage-subscription";
 import { stripe } from "@/utils/stripe";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -22,17 +24,40 @@ export const POST = async (request: Request) => {
   switch (event.type) {
     case "customer.subscription.deleted":
       const payment = event.data.object as Stripe.Subscription;
-      console.log("Assinatura cancelada: ", payment);
+      await manageSubscription(
+        payment.id,
+        payment.customer.toString(),
+        false,
+        true,
+      );
       //deletar assinatura do usuario no banco
       break;
+
     case "customer.subscription.updated":
       const paymentIntent = event.data.object as Stripe.Subscription;
-      console.log("Atualizar assinatura: ", paymentIntent);
+      await manageSubscription(
+        paymentIntent.id,
+        paymentIntent.customer.toString(),
+        false,
+      );
       //Atulizar assinatura do usuario no banco
       break;
     case "checkout.session.completed":
       const checkoutSession = event.data.object as Stripe.Checkout.Session;
-      console.log("Assinatura realizada: ", checkoutSession);
+
+      const type = checkoutSession?.metadata?.type
+        ? checkoutSession?.metadata?.type
+        : "BASIC";
+      if (checkoutSession.subscription && checkoutSession.customer) {
+        await manageSubscription(
+          checkoutSession.subscription?.toString(),
+          checkoutSession.customer.toString(),
+          true,
+          false,
+          type as Plan,
+        );
+      }
+
     //Criar uma assinatura ativa para o usuario no banco
     default:
       console.log("EVENTO NÃO TRATADO:", event.type);
