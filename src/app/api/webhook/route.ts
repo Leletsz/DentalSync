@@ -1,6 +1,7 @@
 import { Plan } from "@/generated/prisma/enums";
 import { manageSubscription } from "@/utils/manage-subscription";
 import { stripe } from "@/utils/stripe";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -41,6 +42,7 @@ export const POST = async (request: Request) => {
         false,
       );
       //Atulizar assinatura do usuario no banco
+      revalidatePath("/dashboard/plans");
       break;
     case "checkout.session.completed":
       const checkoutSession = event.data.object as Stripe.Checkout.Session;
@@ -48,6 +50,7 @@ export const POST = async (request: Request) => {
       const type = checkoutSession?.metadata?.type
         ? checkoutSession?.metadata?.type
         : "BASIC";
+
       if (checkoutSession.subscription && checkoutSession.customer) {
         await manageSubscription(
           checkoutSession.subscription?.toString(),
@@ -57,10 +60,13 @@ export const POST = async (request: Request) => {
           type as Plan,
         );
       }
+      revalidatePath("/dashboard/plans");
+      break;
 
     //Criar uma assinatura ativa para o usuario no banco
     default:
       console.log("EVENTO NÃO TRATADO:", event.type);
   }
+
   return NextResponse.json({ received: true });
 };

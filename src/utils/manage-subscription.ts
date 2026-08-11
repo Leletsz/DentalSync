@@ -58,7 +58,7 @@ export async function manageSubscription(
         data: subscriptionData,
       });
     } catch (err) {
-      console.log("ERRO AO SALVAR NO BANCO A ASSINATURA");
+      console.log("ERRO AO SALVAR A ASSINATURA NO BANCO");
     }
     return;
   } else {
@@ -78,6 +78,8 @@ export async function manageSubscription(
           priceId: subscription.items.data[0].price.id,
         },
       });
-    } catch (err) {}
+    } catch (err) {
+      console.log("ERRO AO atualizar A ASSINATURA NO BANCO");
+    }
   }
 }
