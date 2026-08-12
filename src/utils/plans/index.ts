@@ -9,7 +9,7 @@ export const PLANS = {
   BASIC: {
     maxServices: 3,
   },
-  PROFESSIONALS: {
+  PROFESSIONAL: {
     maxServices: 50,
   },
 };
@@ -35,7 +35,8 @@ export const subscriptionPlans = [
     oldPrice: "R$ 197,90",
     price: "R$ 97,90",
     features: [
-      `Até ${PLANS["PROFESSIONALS"].maxServices} serviços`,
+      `Até ${PLANS["PROFESSIONAL"].maxServices} serviços`,
+
       "Agendamentos ilimitados",
       "Suporte prioritário",
       "Relatórios avançados",
