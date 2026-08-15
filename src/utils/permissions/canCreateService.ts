@@ -24,7 +24,7 @@ export async function canCreateService(
       return {
         hasPermission:
           planLimits.maxServices === null ||
-          serviceCount <= planLimits.maxServices,
+          serviceCount < planLimits.maxServices,
         planId: subscription.plan,
         expired: false,
         plan: PLANS[subscription.plan],

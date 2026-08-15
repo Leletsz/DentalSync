@@ -40,7 +40,7 @@ export default function ServicesList({
     setEditingService(service);
     setIsDialogOpen(true);
   }
-
+  console.log(permission);
   return (
     <Dialog
       open={isDialogOpen}
@@ -66,7 +66,9 @@ export default function ServicesList({
             )}
             {!permission.hasPermission && (
               <Link href={"/dashboard/plans"} className="text-red-500">
-                Limite de serviços atingido
+                {permission.planId === "EXPIRED"
+                  ? "Plano expirado"
+                  : "Limite de serviços atingido"}
               </Link>
             )}
             <DialogContent

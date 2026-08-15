@@ -14,7 +14,7 @@ export async function checkSubscriptionExpired(
     return {
       hasPermission: false,
       planId: "EXPIRED",
-      expired: false,
+      expired: true,
       plan: null,
     };
   }

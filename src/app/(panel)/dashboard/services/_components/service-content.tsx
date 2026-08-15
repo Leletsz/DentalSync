@@ -20,7 +20,9 @@ export async function ServicesContent({ userId }: ServicesContentProps) {
 
   return (
     <>
-      <LabelSubscription expired={true} />
+      {!permissions.hasPermission && (
+        <LabelSubscription expired={permissions.expired} />
+      )}
       <ServicesList services={services.data || []} permission={permissions} />
     </>
   );

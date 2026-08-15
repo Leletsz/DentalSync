@@ -9,7 +9,7 @@ export function LabelSubscription({ expired }: { expired: boolean }) {
             Seu plano expirou ou não possui plano ativo!
           </h3>
         ) : (
-          <h3>Você excedeu o limite do seu plano</h3>
+          <h3 className="font-semibold">Você excedeu o limite do seu plano </h3>
         )}
         <p className="text-sm text-gray-50">
           Acesse o seu plano para verificar os detalhes
