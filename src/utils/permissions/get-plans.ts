@@ -1,5 +1,3 @@
-"use server";
-
 import { Plan } from "@/generated/prisma/enums";
 import { PlansProps } from "../plans";
 
