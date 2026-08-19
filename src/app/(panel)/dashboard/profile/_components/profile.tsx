@@ -45,6 +45,7 @@ import { updateProfile } from "../_actions/update-profile";
 import { formatPhone } from "@/utils/formatPhone";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { AvatarProfile } from "./profile-avatar";
 
 type UserWithSubscription = Prisma.UserGetPayload<{
   include: {
@@ -130,11 +131,14 @@ export function ProfileContent({ user }: ProfileContentProps) {
     toast(response.data);
     setEditProfile(true);
   }
+
   async function handleLogout() {
     await signOut();
     await update();
     router.replace("/");
   }
+
+  if (!user) return null;
 
   return (
     <div className="mx-auto">
@@ -147,15 +151,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex justify-center">
-            <div className="relative h-40 w-40 rounded-full overflow-hidden">
-              <Image
-                src={user?.image ? user.image : imgProfile}
-                alt=""
-                width={160}
-                height={160}
-                className="object-cover"
-              />
-            </div>
+            <AvatarProfile avatarUrl={user.image} userId={user.id} />
           </div>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup className="space-y-3">

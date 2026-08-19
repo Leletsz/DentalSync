@@ -1,0 +1,104 @@
+"use client";
+
+import Image from "next/image";
+import { ChangeEvent, useState } from "react";
+import noPhoto from "../../../../../../public/foto1.png";
+import { Loader, Upload } from "lucide-react";
+import { toast } from "sonner";
+
+interface AvatarProfileProps {
+  avatarUrl: string | null;
+  userId: string;
+}
+export function AvatarProfile({ avatarUrl, userId }: AvatarProfileProps) {
+  const [previewImage, setPreviewImage] = useState(avatarUrl);
+  const [iconLoading, setIconLoading] = useState(false);
+
+  async function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files[0]) {
+      setIconLoading(true);
+      const image = e.target.files[0];
+      if (image.type != "image/jpeg" && image.type !== "image/png") {
+        toast.error("Formato de imagem inválido");
+        setIconLoading(false);
+        return;
+      }
+
+      const newFilename = `${userId}`;
+      const newFile = new File([image], newFilename, { type: image.type });
+      await uploadImage(newFile);
+    }
+  }
+
+  async function uploadImage(image: File): Promise<string | null> {
+    try {
+      toast("Enviando Imagem...");
+
+      const formData = new FormData();
+
+      formData.append("file", image);
+      formData.append("userId", userId);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return null;
+      }
+
+      toast.success("Imagem alterada com sucesso");
+
+      return data as string;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  return (
+    <div className="relative w-40 h-40 md:w-48 md:h-48">
+      <div className="relative flex items-center justify-center w-full h-full rounded-full">
+        <span className="absolute cursor-pointer z-2 bg-slate-50/80 p-2 rounded-full shadow-xl">
+          {iconLoading ? (
+            <Loader size={16} color="#131313" className="animate-spin" />
+          ) : (
+            <Upload size={16} color="#131313" />
+          )}
+        </span>
+        <input
+          type="file"
+          name=""
+          className="cursor-pointer relative z-50 w-48 h-48 opacity-0 rounded-full"
+          onChange={handleChange}
+        />
+      </div>
+      {previewImage ? (
+        <Image
+          src={previewImage}
+          alt="Foto de perfil da clinica"
+          fill
+          className="w-full h-48 object-cover rounded-full bg-slate-200"
+          quality={100}
+          priority
+          sizes="(max-width: 480px) 100vw, (max-width: 1024px) 75vw 60vw"
+        />
+      ) : (
+        <Image
+          src={noPhoto}
+          alt="Foto de perfil da clinica"
+          fill
+          className="w-full h-48 object-cover rounded-full bg-slate-200"
+          quality={100}
+          priority
+          sizes="(max-width: 480px) 100vw, (max-width: 1024px) 75vw 60vw"
+        />
+      )}
+    </div>
+  );
+}
