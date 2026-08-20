@@ -9,8 +9,13 @@ import { toast } from "sonner";
 interface AvatarProfileProps {
   avatarUrl: string | null;
   userId: string;
+  editProfile: boolean;
 }
-export function AvatarProfile({ avatarUrl, userId }: AvatarProfileProps) {
+export function AvatarProfile({
+  avatarUrl,
+  userId,
+  editProfile,
+}: AvatarProfileProps) {
   const [previewImage, setPreviewImage] = useState(avatarUrl);
   const [iconLoading, setIconLoading] = useState(false);
 
@@ -26,7 +31,11 @@ export function AvatarProfile({ avatarUrl, userId }: AvatarProfileProps) {
 
       const newFilename = `${userId}`;
       const newFile = new File([image], newFilename, { type: image.type });
-      await uploadImage(newFile);
+      const urlImage = await uploadImage(newFile);
+      if (urlImage) {
+        setPreviewImage(urlImage);
+      }
+      setIconLoading(false);
     }
   }
 
@@ -55,7 +64,7 @@ export function AvatarProfile({ avatarUrl, userId }: AvatarProfileProps) {
 
       toast.success("Imagem alterada com sucesso");
 
-      return data as string;
+      return (data as string) ?? null;
     } catch (err) {
       return null;
     }
@@ -64,41 +73,33 @@ export function AvatarProfile({ avatarUrl, userId }: AvatarProfileProps) {
   return (
     <div className="relative w-40 h-40 md:w-48 md:h-48">
       <div className="relative flex items-center justify-center w-full h-full rounded-full">
-        <span className="absolute cursor-pointer z-2 bg-slate-50/80 p-2 rounded-full shadow-xl">
-          {iconLoading ? (
-            <Loader size={16} color="#131313" className="animate-spin" />
-          ) : (
-            <Upload size={16} color="#131313" />
-          )}
-        </span>
-        <input
-          type="file"
-          name=""
-          className="cursor-pointer relative z-50 w-48 h-48 opacity-0 rounded-full"
-          onChange={handleChange}
-        />
+        {!editProfile && (
+          <>
+            <span className="absolute cursor-pointer z-2 bg-slate-50/80 p-2 rounded-full shadow-xl">
+              {iconLoading ? (
+                <Loader size={16} color="#131313" className="animate-spin" />
+              ) : (
+                <Upload size={16} color="#131313" />
+              )}
+            </span>
+            <input
+              type="file"
+              name=""
+              className="cursor-pointer relative z-50 w-48 h-48 opacity-0 rounded-full"
+              onChange={handleChange}
+            />
+          </>
+        )}
       </div>
-      {previewImage ? (
-        <Image
-          src={previewImage}
-          alt="Foto de perfil da clinica"
-          fill
-          className="w-full h-48 object-cover rounded-full bg-slate-200"
-          quality={100}
-          priority
-          sizes="(max-width: 480px) 100vw, (max-width: 1024px) 75vw 60vw"
-        />
-      ) : (
-        <Image
-          src={noPhoto}
-          alt="Foto de perfil da clinica"
-          fill
-          className="w-full h-48 object-cover rounded-full bg-slate-200"
-          quality={100}
-          priority
-          sizes="(max-width: 480px) 100vw, (max-width: 1024px) 75vw 60vw"
-        />
-      )}
+      <Image
+        src={previewImage || noPhoto}
+        alt="Foto de perfil da clinica"
+        fill
+        className="w-full h-48 object-cover rounded-full bg-slate-200"
+        quality={75}
+        priority
+        sizes="(max-width: 480px) 100vw, (max-width: 1024px) 75vw 60vw"
+      />
     </div>
   );
 }

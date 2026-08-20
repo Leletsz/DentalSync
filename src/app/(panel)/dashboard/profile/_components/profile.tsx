@@ -33,8 +33,6 @@ import {
 
 import { ProfileFormData, useProfileForm } from "./profile-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
-import imgProfile from "../../../../../../public/foto1.png";
 import { Controller } from "react-hook-form";
 import { ArrowRight, Edit, Edit2 } from "lucide-react";
 import { useState } from "react";
@@ -145,13 +143,22 @@ export function ProfileContent({ user }: ProfileContentProps) {
       <Card>
         <CardHeader className="flex justify-between items-center">
           <CardTitle>Meu perfil</CardTitle>
-          <Button className="cursor-pointer" type="button" onClick={handleEdit}>
+          <Button
+            className="cursor-pointer"
+            disabled={!editProfile}
+            type="button"
+            onClick={handleEdit}
+          >
             <Edit />
           </Button>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex justify-center">
-            <AvatarProfile avatarUrl={user.image} userId={user.id} />
+            <AvatarProfile
+              avatarUrl={user.image}
+              userId={user.id}
+              editProfile={editProfile}
+            />
           </div>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup className="space-y-3">
