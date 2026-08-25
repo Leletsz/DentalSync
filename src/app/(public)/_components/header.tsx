@@ -32,7 +32,7 @@ export function Header() {
           onClick={() => setIsOpen(false)}
           key={item.href}
           asChild
-          className="bg-transparent text-black hover:bg-transparent hover:text-amber-50 shadow-none font-normal"
+          className="bg-transparent text-black hover:bg-transparent hover:text-amber-50 shadow-none font-normal cursor-pointer"
         >
           <Link className="text-base" href={item.href}>
             {item.label}
