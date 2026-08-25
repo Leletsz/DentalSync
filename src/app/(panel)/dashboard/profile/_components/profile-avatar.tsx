@@ -5,6 +5,8 @@ import { ChangeEvent, useState } from "react";
 import noPhoto from "../../../../../../public/foto1.png";
 import { Loader, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { updateProfileAvatar } from "../_actions/update-avatar";
+import { useSession } from "next-auth/react";
 
 interface AvatarProfileProps {
   avatarUrl: string | null;
@@ -19,6 +21,8 @@ export function AvatarProfile({
   const [previewImage, setPreviewImage] = useState(avatarUrl);
   const [iconLoading, setIconLoading] = useState(false);
 
+  const { update } = useSession();
+
   async function handleChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files[0]) {
       setIconLoading(true);
@@ -32,9 +36,15 @@ export function AvatarProfile({
       const newFilename = `${userId}`;
       const newFile = new File([image], newFilename, { type: image.type });
       const urlImage = await uploadImage(newFile);
+
       if (urlImage) {
         setPreviewImage(urlImage);
+        await updateProfileAvatar({ avatarUrl: urlImage });
+        await update({
+          image: urlImage,
+        });
       }
+
       setIconLoading(false);
     }
   }
@@ -64,7 +74,7 @@ export function AvatarProfile({
 
       toast.success("Imagem alterada com sucesso");
 
-      return (data as string) ?? null;
+      return (data as { secure_url: string })?.secure_url ?? null;
     } catch (err) {
       return null;
     }

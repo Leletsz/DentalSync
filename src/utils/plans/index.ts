@@ -10,7 +10,7 @@ export const PLANS = {
     maxServices: 3,
   },
   PROFESSIONAL: {
-    maxServices: 50,
+    maxServices: 15,
   },
 };
 

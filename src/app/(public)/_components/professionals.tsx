@@ -3,10 +3,14 @@ import React from "react";
 import profImg from "../../../../public/foto1.png";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { User } from "@/generated/prisma/client";
+import { ArrowRight, Star } from "lucide-react";
+import { Prisma, User } from "@/generated/prisma/client";
+
+type UserWithSubscription = Prisma.UserGetPayload<{
+  include: { subscription: true };
+}>;
 interface ProfessionalsProps {
-  professionals: User[];
+  professionals: UserWithSubscription[];
 }
 export default function Professionals({ professionals }: ProfessionalsProps) {
   return (
@@ -30,19 +34,26 @@ export default function Professionals({ professionals }: ProfessionalsProps) {
                       fill
                       className="object-cover"
                     />
+                    {/* Star Icone */}
+                    {clinic?.subscription?.status === "active" &&
+                      clinic?.subscription?.plan === "PROFESSIONAL" && (
+                        <div className="absolute top-1 right-1 bg-yellow-500 w-10 h-10 rounded-full flex items-center justify-center">
+                          <Star className="text-white " />
+                        </div>
+                      )}
                   </div>
                 </div>
 
-                <div className="p-4 space-y-4">
+                <div className="p-4 space-y-4 min-h-40 flex flex-col justify-between">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-semibold">{clinic.name}</h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 line-clamp-1">
                         {clinic.address ?? "Endereço não informado"}
                       </p>
                     </div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                   </div>
+
                   <Link
                     href={`/clinica/${clinic.id}`}
                     target="_blank"

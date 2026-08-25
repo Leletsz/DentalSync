@@ -47,12 +47,5 @@ export const POST = async (request: Request) => {
       .end(buffer);
   });
 
-  const imageUrl = (results as { secure_url: string }).secure_url;
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: { image: imageUrl },
-  });
-
-  return NextResponse.json(imageUrl);
+  return NextResponse.json(results);
 };
