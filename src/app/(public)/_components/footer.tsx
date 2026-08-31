@@ -29,7 +29,7 @@ export function Footer() {
         </section>
         <section className="md:text-start">
           <span className="font-bold mt-1 text-lg">Institucional</span>
-          <div className="flex gap-2 md:flex-col text-start">
+          <div className="flex gap-2 md:flex-col md:text-start">
             <Link href={""}>Sobre nós</Link>
             <Link href={""}>Termos de uso</Link>
             <Link href={""}>Privacidade</Link>
