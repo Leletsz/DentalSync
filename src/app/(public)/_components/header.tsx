@@ -14,6 +14,8 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { handleRegister } from "../_actions/login";
+import Image from "next/image";
+import LogoMain from "../../../../public/Logo.png";
 
 export function Header() {
   const { data: session, status } = useSession();
@@ -60,7 +62,14 @@ export function Header() {
     <header className="fixed top-0 right-0 left-0 z-999 py-4 px-6 bg-white">
       <div className="container mx-auto flex items-center justify-between">
         <Link href={"/"} className="text-3xl font-bold text-zinc-900">
-          Dental<span className="text-cyan-600">Sync</span>
+          <Image
+            src={LogoMain}
+            alt="Logo Detanlsync"
+            height={200}
+            width={200}
+            quality={100}
+            priority={true}
+          />
         </Link>
         <nav className="hidden md:flex items-center space-x-4">
           <NavLinks />

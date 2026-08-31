@@ -15,6 +15,14 @@ export default async function Home() {
         <Hero />
         <Professionals professionals={professionals || []} />
         <Footer />
+        <p className="text-black bg-white text-center p-1">
+          © {new Date().getFullYear()}
+          <span className="hover:text-cyan-500 duration-300">
+            {" "}
+            DentalSync.
+          </span>{" "}
+          Todos direitos reservados
+        </p>
       </div>
     </div>
   );
