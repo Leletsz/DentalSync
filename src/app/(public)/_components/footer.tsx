@@ -21,10 +21,10 @@ export function Footer() {
         <section className="md:text-start">
           <span className="font-bold text-lg text-start">Navegação</span>
           <div className="flex gap-2 mt-1 md:flex-col text-start">
-            <Link href={""}>Sobre nós</Link>
-            <Link href={""}>Termos de uso</Link>
-            <Link href={""}>Privacidade</Link>
-            <Link href={""}>contato</Link>
+            <Link href={""}>Clínicas</Link>
+            <Link href={""}>Especialidades</Link>
+            <Link href={""}>Como funciona</Link>
+            <Link href={""}>Profissionais</Link>
           </div>
         </section>
         <section className="md:text-start">
@@ -33,7 +33,7 @@ export function Footer() {
             <Link href={""}>Sobre nós</Link>
             <Link href={""}>Termos de uso</Link>
             <Link href={""}>Privacidade</Link>
-            <Link href={""}>contato</Link>
+            <Link href={""}>Contato</Link>
           </div>
         </section>
         <section className="text-start">
