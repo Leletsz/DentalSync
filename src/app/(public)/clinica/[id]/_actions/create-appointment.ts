@@ -7,7 +7,7 @@ const formSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório"),
   email: z.email().min(1, "O email é obrigatório"),
   phone: z.string().min(1, "O nome é obrigatório"),
-  date: z.date(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida"),
   serviceId: z.string().min(1, "O nome é obrigatório"),
   time: z.string().min(1, "O nome é obrigatório"),
   clinicId: z.string().min(1, "O nome é obrigatório"),
@@ -24,13 +24,10 @@ export async function createNewAppointment(formData: FormSchema) {
     };
   }
   try {
-    const selectedDate = new Date(formData.date);
-
-    const year = selectedDate.getUTCFullYear();
-    const month = selectedDate.getUTCMonth();
-    const day = selectedDate.getUTCDate();
-
-    const appointmentDate = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+    const [year, month, day] = formData.date.split("-").map(Number);
+    const appointmentDate = new Date(
+      Date.UTC(year, month - 1, day, 0, 0, 0, 0),
+    );
 
     const newAppointment = await prisma.appointment.create({
       data: {

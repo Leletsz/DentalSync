@@ -33,6 +33,7 @@ import { ScheduleTimeList } from "./schedule-time-list";
 import { createNewAppointment } from "../_actions/create-appointment";
 import { toast } from "sonner";
 import { useWatch } from "react-hook-form";
+import { format } from "date-fns";
 
 type UserWithServiceAndSubscription = Prisma.UserGetPayload<{
   include: {
@@ -89,7 +90,7 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
 
         const json = await response.json();
         setLoadingSlots(false);
-        return json; //Retorna o array com os horarios que ja tem bloqueado desse Dia e dessa clinica
+        return json;
       } catch (err) {
         console.log(err);
         setLoadingSlots(false);
@@ -124,12 +125,14 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
       return;
     }
 
+    const dateString = format(formData.date, "yyyy-MM-dd");
+
     const response = await createNewAppointment({
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
       time: selectedTime,
-      date: formData.date,
+      date: dateString,
       serviceId: formData.serviceId,
       clinicId: clinic.id,
     });
