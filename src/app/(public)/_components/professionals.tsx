@@ -4,7 +4,8 @@ import profImg from "../../../../public/foto1.png";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
-import { Prisma, User } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
+import { clinicIsVisible } from "@/utils/permissions/checkClinics";
 
 type UserWithSubscription = Prisma.UserGetPayload<{
   include: { subscription: true };
@@ -12,7 +13,9 @@ type UserWithSubscription = Prisma.UserGetPayload<{
 interface ProfessionalsProps {
   professionals: UserWithSubscription[];
 }
-export default function Professionals({ professionals }: ProfessionalsProps) {
+export default async function Professionals({
+  professionals,
+}: ProfessionalsProps) {
   return (
     <section className="bg-gray-50 py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,7 +23,8 @@ export default function Professionals({ professionals }: ProfessionalsProps) {
           Clínicas disponíveis
         </h2>
         <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {professionals.map((clinic) => (
+          {/*Renderiza apenas clinicas com plano ou em Trial*/}
+          {professionals.filter(clinicIsVisible).map((clinic) => (
             <Card
               className="overflow-hidden p-0 hover:shadow-lg duration-300"
               key={clinic.id}
