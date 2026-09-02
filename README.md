@@ -18,25 +18,25 @@
 
 ---
 
-## 📋 Sobre o Projeto
+##  Sobre o Projeto
 
 O **DentalSync** é uma plataforma SaaS completa desenvolvida para clínicas odontológicas gerenciarem seus agendamentos, serviços e pacientes de forma simples e eficiente. Cada clínica possui seu próprio painel de controle com página pública de agendamento para os pacientes.
 
-### ✨ Funcionalidades
+###  Funcionalidades
 
-- 📅 **Agendamento Online** — Pacientes agendam consultas pela página pública da clínica com data, horário e serviço
-- 🏥 **Painel da Clínica** — Dashboard completo com visão geral de agendamentos e métricas
-- 🛠️ **Gestão de Serviços** — Cadastro de serviços com nome, preço e duração
-- 👤 **Perfil da Clínica** — Configuração de dados, foto, endereço e horários disponíveis
-- 🔔 **Lembretes** — Sistema de lembretes internos para a equipe
-- 📊 **Relatórios** — Visão analítica dos agendamentos
-- 💳 **Assinaturas** — Planos Basic e Professional via Stripe
-- 🔐 **Autenticação** — Login seguro com NextAuth v5
-- 🖼️ **Upload de Imagens** — Armazenamento de fotos via Cloudinary
+-  **Agendamento Online** — Pacientes agendam consultas pela página pública da clínica com data, horário e serviço
+-  **Painel da Clínica** — Dashboard completo com visão geral de agendamentos e métricas
+-  **Gestão de Serviços** — Cadastro de serviços com nome, preço e duração
+-  **Perfil da Clínica** — Configuração de dados, foto, endereço e horários disponíveis
+-  **Lembretes** — Sistema de lembretes internos para a equipe
+-  **Relatórios** — Visão analítica dos agendamentos
+-  **Assinaturas** — Planos Basic e Professional via Stripe
+-  **Autenticação** — Login seguro com NextAuth v5
+-  **Upload de Imagens** — Armazenamento de fotos via Cloudinary
 
 ---
 
-## 🛠️ Stack Tecnológica
+##  Stack Tecnológica
 
 | Tecnologia                                                                  | Uso                                |
 | --------------------------------------------------------------------------- | ---------------------------------- |
@@ -55,7 +55,7 @@ O **DentalSync** é uma plataforma SaaS completa desenvolvida para clínicas odo
 
 ---
 
-## 🗂️ Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 dentalsync/
@@ -88,7 +88,7 @@ dentalsync/
 
 ---
 
-## 🚀 Como Executar Localmente
+## Como Executar Localmente
 
 ### Pré-requisitos
 
@@ -154,7 +154,7 @@ Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 
 ---
 
-## 📦 Scripts Disponíveis
+## Scripts Disponíveis
 
 | Comando                 | Descrição                                                   |
 | ----------------------- | ----------------------------------------------------------- |
@@ -165,7 +165,7 @@ Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 
 ---
 
-## 🗄️ Modelos do Banco de Dados
+## Modelos do Banco de Dados
 
 ```
 User (Clínica)
@@ -181,17 +181,11 @@ Appointment
 
 ---
 
-## 💳 Planos
+## Planos
 
 | Plano            | Recursos                                             |
 | ---------------- | ---------------------------------------------------- |
 | **Basic**        | Agendamentos, serviços e perfil da clínica           |
 | **Professional** | Tudo do Basic + relatórios avançados e mais recursos |
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
