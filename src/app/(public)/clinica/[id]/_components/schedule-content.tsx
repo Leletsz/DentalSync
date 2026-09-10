@@ -34,6 +34,7 @@ import { createNewAppointment } from "../_actions/create-appointment";
 import { toast } from "sonner";
 import { useWatch } from "react-hook-form";
 import { format } from "date-fns";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 type UserWithServiceAndSubscription = Prisma.UserGetPayload<{
   include: {
@@ -295,7 +296,9 @@ export default function ScheduleContent({ clinic }: ScheduleContentProps) {
                       <SelectContent>
                         {clinic.services.map((service) => (
                           <SelectItem key={service.id} value={service.id}>
-                            {service.name} ({Math.floor(service.duration / 60)}h{" "}
+                            <span>{service.name} -</span>
+                            {formatCurrency(service.price / 100)} (
+                            {Math.floor(service.duration / 60)}h{" "}
                             {service.duration % 60}min)
                           </SelectItem>
                         ))}
